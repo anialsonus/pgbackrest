@@ -46,8 +46,7 @@ Test statuses
 #define TEST_RESTORE_POINT                                          "pgbackrest"
 
 #define UPDATE_SPOOL_PATH() \
-    hrnHostConfigUpdateP(   \
-        .archiveAsync = BOOL_TRUE_VAR, .spoolPath = VARSTR(strNewFmt("%s/" STRINGIFY(__COUNTER__), strZ(hrnHostSpoolPath(pg1)))))
+    hrnHostConfigUpdateP(.archiveAsync = BOOL_TRUE_VAR, .spoolPathPostfix = VARSTR(STRDEF(STRINGIFY(__COUNTER__))))
 
 /***********************************************************************************************************************************
 Test Run

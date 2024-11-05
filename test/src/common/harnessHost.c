@@ -77,7 +77,7 @@ static struct HrnHostLocal
     MemContext *memContext;                                         // Mem context for variables
 
     String *stanza;                                                 // Stanza
-    const String *spoolPath;                                        // Spool path
+    const String *spoolPathPostfix;                                 // Spool path postfix
     unsigned int pgVersion;                                         // Pg version
     StringId repoHost;                                              // Host acting as repository
     StringId storage;                                               // Storage type
@@ -643,8 +643,13 @@ hrnHostConfig(HrnHost *const this)
             {
                 strCatZ(config, "\n");
                 strCatZ(config, "archive-async=y\n");
-                strCatFmt(
-                    config, "spool-path=%s\n", strZ(hrnHostLocal.spoolPath ? hrnHostLocal.spoolPath : hrnHostSpoolPath(this)));
+
+                const String *const spoolPath = strNewFmt(
+                    "%s/%s",
+                    strZ(hrnHostSpoolPath(this)),
+                    hrnHostLocal.spoolPathPostfix ? strZ(hrnHostLocal.spoolPathPostfix) : "");
+
+                strCatFmt(config, "spool-path=%s\n", strZ(spoolPath));
             }
 
             // Recovery options
@@ -1048,8 +1053,8 @@ hrnHostConfigUpdate(const HrnHostConfigUpdateParam param)
     // Update config
     if (param.archiveAsync != NULL)
         hrnHostLocal.archiveAsync = varBool(param.archiveAsync);
-    if (param.spoolPath != NULL)
-        hrnHostLocal.spoolPath = varStr(param.spoolPath);
+    if (param.spoolPathPostfix != NULL)
+        hrnHostLocal.spoolPathPostfix = varStr(param.spoolPathPostfix);
 
     // Write pgBackRest configuration for hosts
     hrnHostConfig(hrnHostPg1());
